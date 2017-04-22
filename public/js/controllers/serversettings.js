@@ -30,8 +30,8 @@ angular.module('myApp')
             host          : $scope.server.host,
             port          : $scope.server.port,
             nick          : $scope.server.nick,
-            secure        : $scope.nServConf.secure,
-            selfSigned    : $scope.nServConf.selfSigned,
+            secure        : $scope.server.secure,
+            selfSigned    : $scope.server.selfSigned,
             channels      : $scope.server.channels.length > 0 ? $scope.server.channels.join(' ') : "",
             observchannels: $scope.server.observchannels.length > 0 ? $scope.server.observchannels.join(' ') : ""
         };
