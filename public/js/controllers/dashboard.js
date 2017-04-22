@@ -132,21 +132,59 @@ angular.module('myApp').controller('DashboardCtrl', ['$scope', '$http', '$timeou
 
 
 /* Notification controller */
-angular.module('myApp').controller('NotificationCtrl', ['$scope', '$http', 'socket', '$rootScope', '$location',  function ($scope, $http, socket, $rootScope, $location){
+angular.module('myApp').controller('NotificationCtrl', ['$scope', '$http', 'socket', '$rootScope', '$location', 'webNotification',  function ($scope, $http, socket, $rootScope, $location, webNotification){
 
+	function createPushHtmlMessage(data){
+		const result = {icon: 'favicon.ico'};
+		switch(data.type) {
+		    case 'dlstart':
+		    	result.title = "Download started";
+		        break;
+		    case 'dlsuccess':
+		    	result.title = "Download completed sucessfully";
+		        break;
+		    case 'dlcancel':
+		    	result.title = "Download canceled";
+		        break;
+		    default:
+		    	result.title = "Download failed: " +  $scope.getError(data);
+		}
+		result.body = data.packObj.filename + " from " + data.packObj.server;
+		return result;
+	}
+	
+	function pushBrowserNotification(data){
+		const message = createPushHtmlMessage(data);
+		webNotification.showNotification(message.title, {
+            body: message.body,
+            icon: message.icon,
+            autoClose: 4000 //auto close the notification after 4 seconds (you can manually close it via hide function)
+        });
+		
+	}
+	
     socket.on('send:dlstart',function(data){
         data.type = 'dlstart';
         $scope.notifications.push(data);
+        pushBrowserNotification(data);
     });
 
     socket.on('send:dlerror',function(data){
         data.type = 'dlerror';
         $scope.notifications.push(data);
+        pushBrowserNotification(data);
     });
 
     socket.on('send:dlsuccess',function(data){
         data.type = 'dlsuccess';
         $scope.notifications.push(data);
+        pushBrowserNotification(data);
+    });
+    
+    socket.on('send:dlcancel',function(data){
+        data.type = 'dlcancel';
+        $scope.notifications.push(data);
+        pushBrowserNotification(data);
     });
 
     $scope.$on('$destroy', function () {
@@ -181,6 +219,9 @@ angular.module('myApp').controller('NotificationCtrl', ['$scope', '$http', 'sock
             }
             if(error.code === "ECONNRESET"){
                 return "Connection reset";
+    		}
+            if(error.code === "EADDRNOTAVAIL"){
+                return "Address Not Available: " + error.address;
     		}
             return error.code;
         }

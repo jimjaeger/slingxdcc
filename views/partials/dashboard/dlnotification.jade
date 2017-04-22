@@ -30,6 +30,20 @@
                 .col-lg-3
                     .row
                         span(tooltip-append-to-body="true", tooltip="{{notification.time | date:'medium'}}", tooltip-placement="left").pull-right {{notification.time | timeago}}
+            div(ng-switch-when="dlcancel")
+                .col-lg-1
+                    .row
+                        span(tooltip-append-to-body="true", tooltip="Server:{{notification.packObj.server}}, Bot:{{notification.packObj.nick}}, Pack:{{notification.packObj.nr}}", tooltip-placement="right").badge.badge-warning
+                            span.glyphicon.glyphicon-stop
+                .col-lg-8
+                    .row
+                        span(tooltip-append-to-body="true", tooltip-placement="bottom", tooltip="{{notification.packObj.filename}}") {{notification.packObj.filename | truncate:40}}
+                    .row
+                        span Download canceled
+                .col-lg-3
+                    .row
+                        span(tooltip-append-to-body="true", tooltip="{{notification.time | date:'medium'}}", tooltip-placement="left").pull-right {{notification.time | timeago}}
+    
             div(ng-switch-default)
                 .col-lg-1
                     .row

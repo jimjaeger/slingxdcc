@@ -22,10 +22,14 @@ angular.module('myApp')
     };
 
     $scope.addServer = function (){
+        if ($scope.nServConf.port.length === 0){
+        	$scope.nServConf.port = "6667";
+        }
+        
         if ($scope.nServConf.key.length === 0 || $scope.nServConf.host.length === 0 || parseInt($scope.nServConf.port) > 65535 || parseInt($scope.nServConf.port) < 0 || $scope.nServConf.nick.length === 0){
         	return;
         }
-
+        
         var server = {
             srvkey        : $scope.nServConf.key,
             host          : $scope.nServConf.host,
@@ -51,6 +55,19 @@ angular.module('myApp')
 
                 $scope.getData();
             });
+    };
+    
+    
+    $scope.onNameChange = function (){
+    	if(($scope.nServConf.key.startsWith('irc://') || $scope.nServConf.key.startsWith('ircs://')) && $scope.nServConf.host.length === 0){
+    		const url = ircUrlParts($scope.nServConf.key);
+    		$scope.nServConf.host = url.host;
+    		$scope.nServConf.key = url.host;
+    		$scope.nServConf.port = url.port || (url.protocol === "ircs" ? "6697" : "6667");
+    		$scope.nServConf.channels = url.label ? [url.label] : [];
+    		console.log(url);
+    	}
+    	
     };
 
     $scope.joinChannels = function (){
@@ -86,4 +103,59 @@ angular.module('myApp')
         }
         return true;
     };
+    
+    function ircUrlParts (ircUrl) {
+        // http://tools.ietf.org/html/draft-butcher-irc-url-04
+        if (!ircUrl) {
+            return;
+        }
+        var urlParts = ircUrl.split('://');
+        if (!urlParts[1]) {
+            return;
+        }
+        var protocol = urlParts[0];
+        var port;
+        var bufferParts = urlParts[1].split('#');
+        var rootPart, bufferString;
+        if (bufferParts[0].indexOf('/') === -1) {
+            // No slash used as channel delimiter, just hash
+            rootPart = bufferParts.shift();
+            if (bufferParts.length) {
+                bufferString = '#' + bufferParts.join('#');
+            }
+        } else {
+            bufferParts = urlParts[1].split('/');
+            rootPart = bufferParts.shift();
+            if (bufferParts.length) {
+                bufferString = bufferParts.join('/');
+            }
+        }
+
+        var rootPartSplit = rootPart.split(':');
+        if (rootPartSplit[1]) {
+        	port = rootPartSplit[1];
+        	rootPart = rootPartSplit[0];
+            var rootPortSSL = rootPartSplit[1].match(/^\+(\d+)$/);
+            if (rootPortSSL) {
+                protocol = 'ircs';
+            }
+        }        
+        var url = rootPart;
+        var label;
+        if (bufferString) {
+            var bufferStringParts = bufferString.split(',');
+            label = bufferStringParts[0];
+            if (bufferStringParts[1] != 'isuser' && $.inArray(label[0], ['#', '＃', '&', '+', '!']) == -1) {
+                label = '#' + label;
+            }
+            url += '/' + label;
+        }
+        return {
+        	protocol: protocol,
+        	host: rootPart,
+        	port: port,
+            label: label,
+            url: url
+        };
+    }
 }]);

@@ -89,7 +89,7 @@ angular.module('myApp')
 
     $scope.cancelDownload = function(packet){
         $http.put('/api/downloads/cancel/', {packObj:packet}).then(function (response){
-            if(response.data.success){
+            if(response.data.success || ! response.data.valid){
                 dlList = removeArrayItem(dlList,packet);
             }
 

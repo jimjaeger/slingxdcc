@@ -25,6 +25,7 @@
     "angular-route": "^1.6.4",
     "angular-animate": "^1.6.4",
     "angular-chart.js": "^1.1.1",
-    "socket.io": "^1.7.3"
+    "socket.io": "^1.7.3",
+    "angular-web-notification": "^1.2.15"
   }
 }

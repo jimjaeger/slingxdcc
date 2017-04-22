@@ -156,11 +156,11 @@ exports.compactDb = function (req, res){
 };
 
 exports.setCompactingFilter = function (req, res){
-    packdb.setCompactingFilter(req.body.filter)
+    packdb.setCompactingFilter(req.body.filter);
     res.json({
         filter: req.body.filter
     });
-}
+};
 
 exports.setSorting = function (req, res){
     nconf.set("packetList:sortBy",req.body.sortBy);
@@ -221,8 +221,9 @@ exports.downQueueDownload = function (req, res){
 };
 
 exports.cancelDownload = function (req,res){
+	var valid = downloadHandler.validateDownload(req.body.packObj);
     var success = downloadHandler.cancelDownload(req.body.packObj);
-    res.json({success: success});
+    res.json({success: success, valid: valid});
 };
 
 // POST

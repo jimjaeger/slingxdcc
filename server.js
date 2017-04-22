@@ -34,7 +34,7 @@ nodefs.mkdir(appHome+"config",0775,true,function(){
         io = require('socket.io'),
         nconf = require('nconf'),
     	log4js = require("log4js"),
-    	appLogger = log4js.getLogger('app')
+    	appLogger = log4js.getLogger('app'),
     	httpLogger = log4js.getLogger('http'),
     	errors = require('common-errors');
 
@@ -56,6 +56,7 @@ nodefs.mkdir(appHome+"config",0775,true,function(){
         console.log('Shuting down');
         downloadHandler.exit();
         logger.exit();
+        io.close(); // Close current server
         process.exit();
     });
 
@@ -157,8 +158,10 @@ nodefs.mkdir(appHome+"config",0775,true,function(){
                 }
                 // Hook Socket.io into Express
                 io = io.listen(server);
+                
+                const ioHandler = require('./routes/socket'); 
                 // Socket.io Communication
-                io.sockets.on('connection', require('./routes/socket'));
+                io.sockets.on('connection', ioHandler);
 
                 /**
                  * Start Server

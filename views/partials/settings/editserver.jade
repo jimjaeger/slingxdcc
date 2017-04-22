@@ -1,11 +1,11 @@
 uib-tab(ng-repeat="serv in servers")
     uib-tab-heading
-        span(ng-class="servers[serv.key].connected ? 'label-success' : 'label-danger'").label {{serv.key}}
+        span(ng-class="serv.connected ? 'label-success' : 'label-danger'").label {{serv.key}}
     .row(ng-controller="ServerSettingsCtrl", ng-init="init(serv.key)")
         .col-md-3
             h4 Server settings
             hr
-            form.form-horizontal(role="{server.key}settings",ng-submit="editServer()")
+            form.form-horizontal.ng-pristine(role="{server.key}settings", name="editServer" ng-submit="editServer()")
                 ul.list-group
                     li.list-group-item
                         .form-group
@@ -24,7 +24,7 @@ uib-tab(ng-repeat="serv in servers")
                         button.btn.btn-default(type="submit").pull-right
                             span Save &nbsp;
                             span.glyphicon.glyphicon-ok
-                        button.btn.btn-danger(type="delete" ng-click="removeServer()")
+                        button.btn.btn-danger(type="delete" ng-click="removeServer(); $event.stopPropagation();")
                             span Delete &nbsp;
                             span.glyphicon.glyphicon-remove
 

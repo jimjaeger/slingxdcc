@@ -36,10 +36,10 @@
 	"bitwise" : true, // Prohibit bitwise operators (&, |, ^, etc.).
 	"curly" : true, // Require {} for every new block or scope.
 	"eqeqeq" : true, // Require triple equals i.e. `===`.
-	"forin" : true, // Tolerate `for in` loops without `hasOwnPrototype`.
+	"forin" : false, // Tolerate `for in` loops without `hasOwnPrototype`.
 	"immed" : true, // Require immediate invocations to be wrapped in parens e.g. `( function(){}() );`
-	"latedef" : true, // Prohibit variable use before definition.
-	"newcap" : true, // Require capitalization of all constructor functions e.g. `new F()`.
+	"latedef" : false, // Prohibit variable use before definition.
+	"newcap" : false, // Require capitalization of all constructor functions e.g. `new F()`.
 	"noarg" : true, // Prohibit use of `arguments.caller` and `arguments.callee`.
 	"noempty" : true, // Prohibit use of empty blocks.
 	"nonew" : true, // Prohibit use of constructors for side-effects.
@@ -59,7 +59,7 @@
 	"debug" : false, // Allow debugger statements e.g. browser breakpoints.
 	"eqnull" : false, // Tolerate use of `== null`.
 	//"es5" : true, // Allow EcmaScript 5 syntax. // es5 is default https://github.com/jshint/jshint/issues/1411
-	"esnext" : false, // Allow ES.next (ECMAScript 6) specific features such as `const` and `let`.
+	"esnext" : true, // Allow ES.next (ECMAScript 6) specific features such as `const` and `let`.
 	"evil" : false, // Tolerate use of `eval`.
 	"expr" : false, // Tolerate `ExpressionStatement` as Programs.
 	"funcscope" : false, // Tolerate declarations of variables inside of control structures while accessing them later from the outside.

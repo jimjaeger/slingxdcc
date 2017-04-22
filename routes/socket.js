@@ -2,15 +2,18 @@
  * Serve content over a socket
  */
 
-var logger = require("../lib/xdcclogger");
-var packdb = require("../lib/packdb");
-var downloadHandler = require("../lib/downloadHandler");
+const logger = require("../lib/xdcclogger");
+const packdb = require("../lib/packdb");
+const downloadHandler = require("../lib/downloadHandler");
+const log4js = require('log4js');
+const loggerjs = log4js.getLogger('socket');
 
 module.exports = function (socket) {
+	loggerjs.debug("Client connected to socket", socket.id);
     var lastPacketCount = 0;
 
     setInterval(function () {
-        if(lastPacketCount != packdb.numberOfPackets()){
+        if(lastPacketCount !== packdb.numberOfPackets()){
             lastPacketCount = packdb.numberOfPackets();
 
             var abspackets = packdb.numberOfPackets();
@@ -37,10 +40,12 @@ module.exports = function (socket) {
     });
 
     downloadHandler.on("dlerror",function(data){
+    	//loggerjs.debug("Event dlerror", data);
         socket.emit('send:dlerror', data);
     });
 
     downloadHandler.on("dlsuccess",function(data){
+    	//loggerjs.debug("Event dlsuccess", data.packObj.filename);
         socket.emit('send:dlsuccess', data);
     });
 
@@ -49,7 +54,13 @@ module.exports = function (socket) {
     });
 
     downloadHandler.on("dlstart",function(data){
+    	//loggerjs.debug("Event dlstart", data.packObj.filename);
         socket.emit('send:dlstart', data);
+    });
+    
+    downloadHandler.on("dlcancel",function(data){
+    	//loggerjs.debug("Event dlcancel", data.packObj.filename);
+        socket.emit('send:dlcancel', data);
     });
 
 };
