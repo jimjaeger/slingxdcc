@@ -17,6 +17,8 @@ angular.module('myApp')
         host          : "",
         port          : "",
         nick          : "",
+        secure        : false,
+        selfSigned    : false,
         channels      : [],
         observchannels: []
     };
@@ -35,6 +37,8 @@ angular.module('myApp')
             host          : $scope.nServConf.host,
             port          : $scope.nServConf.port,
             nick          : $scope.nServConf.nick,
+            secure        : $scope.nServConf.secure,
+            selfSigned    : $scope.nServConf.selfSigned,
             channels      : $scope.nServConf.channels.length > 0 ? $scope.nServConf.channels.join(' ') : "",
             observchannels: $scope.nServConf.observchannels.length > 0 ? $scope.nServConf.observchannels.join(' ') : ""
         };
@@ -64,6 +68,8 @@ angular.module('myApp')
     		$scope.nServConf.host = url.host;
     		$scope.nServConf.key = url.host;
     		$scope.nServConf.port = url.port || (url.protocol === "ircs" ? "6697" : "6667");
+    		$scope.nServConf.secure = url.protocol === "ircs";
+    		$scope.nServConf.selfSigned = $scope.nServConf.secure;
     		$scope.nServConf.channels = url.label ? [url.label] : [];
     		console.log(url);
     	}

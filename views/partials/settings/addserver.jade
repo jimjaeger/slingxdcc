@@ -24,6 +24,15 @@ uib-tab.pull-right
                             label(for="nick").col-md-2.control-label Nick:
                             .col-md-10
                                 input(type="text",id="nick" ng-model="nServConf.nick", placeholder="Nickname", required).form-control
+                        .form-group
+                            label(for="secure" title="Secure").col-md-2.control-label 
+                                span.glyphicon.glyphicon-lock
+                            .col-md-4
+                                input(type="checkbox",id="secure" ng-model="server.secure" value="true")
+                            label(for="selfSigned" title="Self Signed").col-md-2.control-label
+                                span.glyphicon.glyphicon-user
+                            .col-md-4
+                                input(type="checkbox",id="selfSigned" ng-model="server.selfSigned" value="true")
                         .alert.alert-warning.pull-left(ng-class="{hide:isKeyUniqe()}") Non unique key will overwrite existing sever
                     li.list-group-item
                         button.btn.btn-default(type="submit" ng-click="addServer()")
