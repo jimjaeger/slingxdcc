@@ -1,0 +1,8 @@
+.wrapper
+  form.form-signin
+    h2.form-signin-heading Please login
+    #login-alert.alert.alert-danger.col-sm-12(ng-show='message') {{message}}
+    input.form-control(type='text', name='username', placeholder='Email Address', ng-model="user.username", required='', autofocus='')
+    input.form-control(type='password', name='password', placeholder='Password', ng-model="user.password", required='')
+    button.btn.btn-lg.btn-primary.btn-block(type='submit' ng-click="login(user)") Login
+    

@@ -13,13 +13,14 @@
 angular.module('myApp')
   .controller('SettingsCtrl', ['$scope', '$http', 'socket', function ($scope, $http, socket){
     $scope.servers = {};
+    $scope.users = {};
     $scope.packetCount = {};
     $scope.compacting = {};
 
     $scope.filter = {};
 
     socket.on('send:irc_connected', function(data){
-        if(typeof $scope.servers[data.server.key] == 'undefined'){
+        if(typeof $scope.servers[data.server.key] === 'undefined'){
             getServerData();
         }else{
             $scope.servers[data.server.key].connected = true;
@@ -27,7 +28,7 @@ angular.module('myApp')
     });
 
     socket.on('send:irc_error', function(data){
-        if(typeof $scope.servers[data.server.key] == 'undefined'){
+        if(typeof $scope.servers[data.server.key] === 'undefined'){
             getServerData();
         }else{
             $scope.servers[data.server.key].error = data.server.error;
@@ -42,6 +43,7 @@ angular.module('myApp')
     $scope.getData = function (){
         getServerData();
         getDbData();
+        getUserData();
     };
 
     function getServerData(){
@@ -50,6 +52,15 @@ angular.module('myApp')
                 response.data[i].key = i;
             }
             $scope.servers = response.data;
+        });
+    }
+    
+    function getUserData(){
+        $http.get('/api/user/').then(function (response){
+            for (var i in response.data){
+                response.data[i].id = i;
+            }
+            $scope.users = response.data;
         });
     }
 

@@ -80,11 +80,11 @@ angular.module('myApp')
     };
 
     $scope.hasErrors = function (){
-        return ($scope.server.error.length > 0);
+        return ($scope.server && $scope.server.error.length > 0);
     };
 
     $scope.isObserved = function (channel){
-        return ($scope.server.observchannels.indexOf(channel) !== -1);
+        return ($scope.server && $scope.server.observchannels.indexOf(channel) !== -1);
     };
 
 }]);

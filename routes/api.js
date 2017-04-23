@@ -15,6 +15,7 @@ var logger = require("../lib/xdcclogger");
 var packdb = require("../lib/packdb");
 var downloadHandler = require("../lib/downloadHandler");
 var nconf = require("nconf");
+var users = require("../lib/security");
 
 var homePath = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE;
 var appHome = homePath+'/.slingxdcc/';
@@ -226,12 +227,86 @@ exports.cancelDownload = function (req,res){
     res.json({success: success, valid: valid});
 };
 
+//GET
+exports.getUsers = function(req, res){
+    res.json(users.getActiveUsers());
+};
+
+// POST
+exports.addUser = function(req, res){
+    console.log("fff");
+    var result = users.addUser({
+        email          : req.body.email,
+        name          : req.body.name,
+        password          : req.body.password,
+        enabled:         req.body.enabled,
+        type:     req.body.type
+    });
+    console.log(result);
+    if (result){
+        res.writeHead(302, {
+            'Location': '/api/user/' + result
+          });
+        res.end();
+    }else{
+        res.send(500);
+    }
+};
+
+// PUT
+exports.editUser = function(req, res){
+    var userkey = req.params.key;
+    var user = users.getActiveUser(userkey);
+    if (typeof user !== "undefined"){
+        var result = users.editUser(userkey, {
+            email          : req.body.email,
+            name          : req.body.name,
+            password          : req.body.password,
+            enabled:         req.body.enabled,
+            type:     req.body.type
+        });
+        if (result){
+            res.send(204);
+        }else{
+            res.send(500);
+        }
+    }else{
+        res.send(404);
+    }
+    
+};
+
+//GET
+exports.getUser = function (req, res){
+    var userkey = req.params.key;
+    var user = users.getActiveUser(userkey);
+    if (user){
+        res.json(user);
+    }else{
+        res.send(404);
+    }
+};
+
+//DELETE
+exports.removeUser = function (req, res){
+    var userkey = req.params.key;
+    var user = users.getActiveUser(userkey);
+    if (typeof user !== "undefined"){
+        users.removeUser(userkey);
+        res.json(true);
+    }else{
+        res.json(false);
+    }
+};
+
 // POST
 exports.addServer = function (req, res){
     logger.addServer(req.body.srvkey, {
         host          : req.body.host,
         port          : parseInt(req.body.port),
         nick          : req.body.nick,
+        secure:         req.body.secure,
+        selfSigned:     req.body.selfSigned,
         channels      : req.body.channels.length > 0 ? req.body.channels.toString().split(" ") : [],
         observchannels: req.body.observchannels.length > 0 ? req.body.observchannels.toString().split(" ") : []
     });
@@ -293,6 +368,7 @@ exports.stopCompactCronjob = function (req, res){
         interval: nconf.get('logger:cleandb_Xminutes')
     });
 };
+
 
 
 

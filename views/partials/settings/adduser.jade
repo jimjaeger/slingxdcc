@@ -1,0 +1,36 @@
+uib-tab.pull-right
+    uib-tab-heading &nbsp;
+        span.glyphicon.glyphicon-plus
+    .row(ng-controller="UserAddCtrl")
+        .col-md-6
+            h4 Add new user
+            hr
+            form#addUserForm.form-horizontal(role="addUser" ng-submit="addUser()")
+                ul.list-group
+                    li.list-group-item
+                        .form-group
+                            label(for="email").col-md-2.control-label Email:
+                            .col-md-10
+                                input(type="email",id="email" ng-model="nUserConf.email", placeholder="Email address", required).form-control
+                        .form-group
+                            label(for="name").col-md-2.control-label Name:
+                            .col-md-10
+                                input(type="text",id="name" ng-model="nUserConf.name", placeholder="Display name").form-control
+                        .form-group
+                            label(for="password").col-md-2.control-label Password:
+                            .col-md-10
+                                input(type="password",id="password" ng-model="nUserConf.password", placeholder="Password", required).form-control
+                        .form-group
+                            label(for="type").col-md-2.control-label Type:
+                            .col-md-10
+                                input(type="text",id="type" ng-model="nUserConf.type", placeholder="Local", required).form-control
+                        .form-group
+                            .col-sm-offset-2.col-sm-10
+                                .checkbox
+                                    label(for="enabled")
+                                        input(type='checkbox', id="enabled" ng-model="nUserConf.enabled")
+                                        |  Enabled
+                    li.list-group-item
+                        button.btn.btn-default(type="submit" ng-disabled="addUserForm.$invalid")
+                            span Save &nbsp;
+                            span.glyphicon.glyphicon-ok

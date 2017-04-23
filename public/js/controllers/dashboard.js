@@ -204,7 +204,6 @@ angular.module('myApp').controller('NotificationCtrl', ['$scope', '$http', 'sock
 
     	function errordecoder(notification){
             var error = notification.error;
-            console.log(error);
             if(error === "filename mismatch"){
                 return "Filename mismatch, got "+notification.gotFile;
             }

@@ -17,6 +17,7 @@ var nodefs = require("node-fs");
 var homePath = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE;
 var appHome = homePath+'/.slingxdcc/';
 
+
 nodefs.mkdir(appHome+"config",0775,true,function(){
 
 
@@ -26,7 +27,7 @@ nodefs.mkdir(appHome+"config",0775,true,function(){
         morgan = require('morgan'),
         bodyParser = require('body-parser'),
         methodOverride = require('method-override'),
-
+        auth = require("./lib/auth"),
         https = require('https'),
         http = require('http'),
         path = require('path'),
@@ -37,6 +38,8 @@ nodefs.mkdir(appHome+"config",0775,true,function(){
     	appLogger = log4js.getLogger('app'),
     	httpLogger = log4js.getLogger('http'),
     	errors = require('common-errors');
+        
+    log4js.configure('logging/logging-' + (process.env.NODE_ENV || 'Development') + '.json');
 
     nconf.add('settings', {type: 'file', file: appHome+'/config/settings.json'});
 
@@ -53,7 +56,7 @@ nodefs.mkdir(appHome+"config",0775,true,function(){
     nconf.save();
 
     process.on('SIGINT', function () {
-        console.log('Shuting down');
+        appLogger.info('Shuting down');
         downloadHandler.exit();
         logger.exit();
         io.close(); // Close current server
@@ -85,12 +88,14 @@ nodefs.mkdir(appHome+"config",0775,true,function(){
         app.use(express.static(path.join(__dirname, 'public')));
         app.use(log4js.connectLogger(httpLogger, { level: 'auto', format: ':remote-addr - :method :url HTTP/:http-version :status - :response-time ms',nolog: '\\.gif|\\.jpg$' }));
         
+        auth.middleware(app);
+
         /**
          * Routes
          */
 
         app.get('/', routes.index);
-        app.get('/partials/:name', routes.partials);
+        app.get('/partials/*', routes.partials);
 
         // JSON API
 
@@ -110,30 +115,36 @@ nodefs.mkdir(appHome+"config",0775,true,function(){
 
         app.get('/api/db/compacting/', api.getNextCompacting);
         app.get('/api/db/compactingfilter/', api.getCompactingFilter);
-        app.get('/api/downloads/', api.getDownloads);
+        app.get('/api/downloads/', auth.authenticate, api.getDownloads);
         app.get('/api/downloads/notifications/', api.getDlNotifications);
         app.get('/api/downloads/notifications/count/', api.getDlNotificationCount);
 
         app.put('/api/packet/sorting/', api.setSorting);
         app.put('/api/packet/filter/', api.setFilter);
         app.put('/api/packet/pagelimit/', api.setPageLimit);
-        app.put('/api/db/compacting/', api.compactDb);
-        app.put('/api/db/compactingfilter/', api.setCompactingFilter);
-        app.put('/api/channel/', api.channels);
-        app.put('/api/downloads/upqueue/', api.upQueueDownload);
-        app.put('/api/downloads/downqueue/', api.downQueueDownload);
-        app.put('/api/downloads/cancel', api.cancelDownload);
+        app.put('/api/db/compacting/', auth.authenticate, api.compactDb);
+        app.put('/api/db/compactingfilter/', auth.authenticate, api.setCompactingFilter);
+        app.put('/api/channel/', auth.authenticate, api.channels);
+        app.put('/api/downloads/upqueue/', auth.authenticate, api.upQueueDownload);
+        app.put('/api/downloads/downqueue/', auth.authenticate, api.downQueueDownload);
+        app.put('/api/downloads/cancel', auth.authenticate, api.cancelDownload);
 
 
 
-        app.post('/api/server/', api.addServer);
-        app.post('/api/downloads/', api.startDownload);
-        app.post('/api/db/compacting/', api.startCompactCronjob);
+        app.post('/api/server/', auth.authenticate, api.addServer);
+        app.post('/api/downloads/', auth.authenticate, api.startDownload);
+        app.post('/api/db/compacting/', auth.authenticate, api.startCompactCronjob);
 
-        app.delete('/api/server/:key', api.removeServer);
+        app.delete('/api/server/:key', auth.authenticate, api.removeServer);
         app.delete('/api/downloads/notifications/', api.clearDlNotifications);
         app.delete('/api/downloads/notifications/count/', api.clearDlNotificationCount);
-        app.delete('/api/db/compacting', api.stopCompactCronjob);
+        app.delete('/api/db/compacting', auth.authenticate, api.stopCompactCronjob);
+        
+        app.get('/api/user/', auth.authenticate, api.getUsers);
+        app.post('/api/user/', auth.authenticate, api.addUser);
+        app.put('/api/user/:key', auth.authenticate, api.editUser);
+        app.get('/api/user/:key', auth.authenticate, api.getUser);
+        app.delete('/api/user/:key', auth.authenticate, api.removeUser);
 
         app.get('*', routes.index);
 

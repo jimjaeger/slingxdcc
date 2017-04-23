@@ -1,0 +1,39 @@
+uib-tab(ng-repeat="user in users")
+    uib-tab-heading
+        span(ng-class="user.enabled? 'label-success' : 'label-danger'").label {{user.name}}
+    .row(ng-controller="UserSettingsCtrl", ng-init="init(user.id)")
+        .col-md-6
+            h4 User settings
+            hr
+            form.form-horizontal.ng-pristine(role="{{user.id}}settings", name="editUserForm" ng-submit="editUser()")
+                ul.list-group
+                    li.list-group-item
+                        .form-group
+                            label(for="name").col-md-2.control-label Name:
+                            .col-md-10
+                                input(type="text",id="name" ng-model="user.name", required).form-control
+                        .form-group
+                            label(for="email").col-md-2.control-label Email:
+                            .col-md-10
+                                input(type="email",id="email" ng-model="user.email", required).form-control
+                        .form-group
+                            label(for="password").col-md-2.control-label Password:
+                            .col-md-10
+                                input(type="password",id="password" ng-model="user.password").form-control
+                        .form-group
+                            label(for="type").col-md-2.control-label Type:
+                            .col-md-10
+                                input(type="text",id="type" ng-model="user.type", required).form-control
+                        .form-group
+                            .col-sm-offset-2.col-sm-10
+                                .checkbox
+                                    label(for="enabled")
+                                        input(type='checkbox', id="enabled" ng-model="user.enabled")
+                                        |  Enabled
+                         button.btn.btn-default(type="submit" ng-disabled="editUserForm.$invalid").pull-right
+                            span Save &nbsp;
+                            span.glyphicon.glyphicon-ok
+                         button.btn.btn-danger(type="delete" ng-click="removeUser(); $event.stopPropagation();")
+                            span Delete &nbsp;
+                            span.glyphicon.glyphicon-remove
+        

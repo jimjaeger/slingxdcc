@@ -1,0 +1,10 @@
+{
+  "appenders": [
+    {
+      "type": "console"
+    }
+  ],
+  "levels": {
+    "[all]": "ERROR"
+  }
+}

@@ -10,6 +10,11 @@ div(ng-controller="SettingsCtrl")
                     uib-tabset
                         include editserver
                         include addserver
+                div(uib-accordion-group='', close-others="true", is-open="true")
+                    div(uib-accordion-heading='') Users
+                    uib-tabset
+                        include edituser
+                        include adduser
                 div(uib-accordion-group='')
                     div(uib-accordion-heading='') Database
                     include database

@@ -71,7 +71,6 @@ angular.module('myApp')
     		$scope.nServConf.secure = url.protocol === "ircs";
     		$scope.nServConf.selfSigned = $scope.nServConf.secure;
     		$scope.nServConf.channels = url.label ? [url.label] : [];
-    		console.log(url);
     	}
     	
     };
